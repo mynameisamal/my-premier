@@ -42,3 +42,32 @@ func (r *Repository) Create(ctx context.Context, data map[string]interface{}) (s
 	return docRef.ID, nil
 }
 
+func (r *Repository) GetAll(ctx context.Context) ([]Request, error) {
+	iter := r.client.Collection(r.collection).
+		OrderBy("created_at", firestore.Desc).
+		Documents(ctx)
+	defer iter.Stop()
+
+	var requests []Request
+	for {
+		doc, err := iter.Next()
+		if err != nil {
+			break
+		}
+
+		var request Request
+		if err := doc.DataTo(&request); err != nil {
+			continue
+		}
+
+		// Set ID from document ID if not present in data
+		if request.ID == "" {
+			request.ID = doc.Ref.ID
+		}
+
+		requests = append(requests, request)
+	}
+
+	return requests, nil
+}
+
