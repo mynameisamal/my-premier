@@ -8,6 +8,7 @@ import (
 	"mypremier-backend/internal/middleware"
 	"mypremier-backend/internal/modules/category"
 	"mypremier-backend/internal/modules/product"
+	"mypremier-backend/internal/modules/request"
 )
 
 func main() {
@@ -41,6 +42,13 @@ func main() {
 	}
 	mux.HandleFunc("/products", productHandler.GetProducts)
 	mux.HandleFunc("/products/", productHandler.GetProduct)
+
+	// Request Info endpoints
+	requestHandler, err := request.NewHandler()
+	if err != nil {
+		log.Fatalf("Failed to initialize request handler: %v", err)
+	}
+	mux.HandleFunc("/request-info", requestHandler.CreateRequest)
 
 	server := &http.Server{
 		Addr:    ":8080",
