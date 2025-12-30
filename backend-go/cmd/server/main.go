@@ -3,12 +3,16 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"mypremier-backend/internal/config"
 )
 
 func main() {
+	// init firebase
+	config.InitFirebase()
+
 	mux := http.NewServeMux()
 
-	// health check
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("MY PREMIER API is running"))
