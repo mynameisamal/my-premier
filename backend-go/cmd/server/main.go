@@ -6,6 +6,7 @@ import (
 
 	"mypremier-backend/internal/config"
 	"mypremier-backend/internal/middleware"
+	"mypremier-backend/internal/modules/category"
 )
 
 func main() {
@@ -24,6 +25,13 @@ func main() {
 	})
 
 	mux.Handle("/protected", middleware.AuthRequired(protected))
+
+	// Category endpoints
+	categoryHandler, err := category.NewHandler()
+	if err != nil {
+		log.Fatalf("Failed to initialize category handler: %v", err)
+	}
+	mux.HandleFunc("/categories", categoryHandler.GetCategories)
 
 	server := &http.Server{
 		Addr:    ":8080",
