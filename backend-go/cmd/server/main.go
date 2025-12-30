@@ -5,18 +5,25 @@ import (
 	"net/http"
 
 	"mypremier-backend/internal/config"
+	"mypremier-backend/internal/middleware"
 )
 
 func main() {
-	// init firebase
 	config.InitFirebase()
 
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("MY PREMIER API is running"))
 	})
+
+	// protected test endpoint
+	protected := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		uid := middleware.GetUserUID(r.Context())
+		w.Write([]byte("Hello UID: " + uid))
+	})
+
+	mux.Handle("/protected", middleware.AuthRequired(protected))
 
 	server := &http.Server{
 		Addr:    ":8080",
@@ -24,7 +31,5 @@ func main() {
 	}
 
 	log.Println("🚀 Server running on http://localhost:8080")
-	if err := server.ListenAndServe(); err != nil {
-		log.Fatal(err)
-	}
+	log.Fatal(server.ListenAndServe())
 }
