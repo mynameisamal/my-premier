@@ -7,6 +7,7 @@ import (
 	"mypremier-backend/internal/config"
 	"mypremier-backend/internal/middleware"
 	"mypremier-backend/internal/modules/category"
+	"mypremier-backend/internal/modules/product"
 )
 
 func main() {
@@ -32,6 +33,14 @@ func main() {
 		log.Fatalf("Failed to initialize category handler: %v", err)
 	}
 	mux.HandleFunc("/categories", categoryHandler.GetCategories)
+
+	// Product endpoints
+	productHandler, err := product.NewHandler()
+	if err != nil {
+		log.Fatalf("Failed to initialize product handler: %v", err)
+	}
+	mux.HandleFunc("/products", productHandler.GetProducts)
+	mux.HandleFunc("/products/", productHandler.GetProduct)
 
 	server := &http.Server{
 		Addr:    ":8080",
