@@ -9,6 +9,7 @@ import (
 	"mypremier-backend/internal/modules/category"
 	"mypremier-backend/internal/modules/product"
 	"mypremier-backend/internal/modules/request"
+	"mypremier-backend/internal/modules/support"
 )
 
 func main() {
@@ -49,6 +50,13 @@ func main() {
 		log.Fatalf("Failed to initialize request handler: %v", err)
 	}
 	mux.HandleFunc("/request-info", requestHandler.CreateRequest)
+
+	// Support endpoints
+	supportHandler, err := support.NewHandler()
+	if err != nil {
+		log.Fatalf("Failed to initialize support handler: %v", err)
+	}
+	mux.HandleFunc("/support", supportHandler.CreateSupport)
 
 	server := &http.Server{
 		Addr:    ":8080",
