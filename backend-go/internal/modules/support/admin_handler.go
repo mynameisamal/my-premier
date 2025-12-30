@@ -5,10 +5,13 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	"mypremier-backend/internal/modules/audit"
 )
 
 type AdminHandler struct {
-	repo *Repository
+	repo        *Repository
+	auditHandler *audit.Handler
 }
 
 func NewAdminHandler() (*AdminHandler, error) {
@@ -17,8 +20,14 @@ func NewAdminHandler() (*AdminHandler, error) {
 		return nil, err
 	}
 
+	auditHandler, err := audit.NewHandler()
+	if err != nil {
+		return nil, err
+	}
+
 	return &AdminHandler{
-		repo: repo,
+		repo:        repo,
+		auditHandler: auditHandler,
 	}, nil
 }
 
@@ -81,6 +90,9 @@ func (h *AdminHandler) UpdateSupportStatus(w http.ResponseWriter, r *http.Reques
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
+
+	// Log audit action
+	_ = h.auditHandler.LogAction(r.Context(), "status_updated", "support", path)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
