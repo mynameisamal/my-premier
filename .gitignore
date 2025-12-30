@@ -1,0 +1,5 @@
+# Firebase
+serviceAccountKey.json
+
+# Go
+/backend-go/go.sum
