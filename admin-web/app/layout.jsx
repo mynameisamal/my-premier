@@ -1,4 +1,5 @@
 import './globals.css';
+import { AuthProviderWrapper } from '../components/AuthProviderWrapper';
 
 export const metadata = {
   title: 'MY PREMIER Admin',
@@ -8,7 +9,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AuthProviderWrapper>
+          {children}
+        </AuthProviderWrapper>
+      </body>
     </html>
   );
 }
